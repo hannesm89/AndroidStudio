@@ -3,36 +3,54 @@ package hm.android.myapplication;
 import android.app.DatePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public class addDateActivity extends AppCompatActivity implements View.OnClickListener{
-    Button buttonChooseDate;
+    private EditText editTextDate;
+    private DatePickerDialog datePickerDialog;
+
+    private SimpleDateFormat dateFormatter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_date);
-        buttonChooseDate = (Button) findViewById(R.id.buttonChooseDate);
-        buttonChooseDate.setOnClickListener(this);
-        Calendar myCalendar = Calendar.getInstance();
-        EditText edittext= (EditText) findViewById(R.id.Birthday);
+
+        editTextDate= (EditText) findViewById(R.id.editTextDate);
+        editTextDate.setInputType(InputType.TYPE_NULL);
+
+        dateFormatter = new SimpleDateFormat("dd.MM.yyyy");
+
+        editTextDate.setOnClickListener(this);
+
+        Calendar newCalendar = Calendar.getInstance();
+        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                editTextDate.setText(dateFormatter.format(newDate.getTime()));
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
         Bundle b = getIntent().getExtras();
         int terminID = b.getInt("Termin-ID");
     }
 
-
-
+    @Override
     public void onClick(View view) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-
-        DatePickerDialog dialog = new DatePickerDialog(_context, this,
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.show();
+        switch (view.getId()) {
+            case R.id.editTextDate:
+            datePickerDialog.show();
+        }
     }
 }
